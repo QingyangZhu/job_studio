@@ -2,7 +2,9 @@ package com.job.job_studio.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.job.job_studio.entity.AlumniInfo;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface AlumniInfoMapper extends BaseMapper<AlumniInfo> {
     // BaseMapper 提供了基本的 CRUD 方法，如：
     // insert(AlumniInfo entity);
