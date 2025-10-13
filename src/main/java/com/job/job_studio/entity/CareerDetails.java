@@ -1,55 +1,46 @@
 package com.job.job_studio.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.time.LocalDate;
+// 移除所有 JPA 相关的导入
 
-@Entity
-@Table(name = "career_details")
 @Data
+@TableName("career_details") // 映射到 career_details 表
 public class CareerDetails {
 
-    // 对应 career_id (INT PRIMARY KEY)
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId("career_id")
     private Long careerId;
 
-    // 对应 company_name (VARCHAR(100))
-    @Column(name = "company_name", nullable = false)
+    // 外键字段：关联 AlumniInfo
+    @TableField("alumni_id")
+    private Long alumniId;
+
+    @TableField("company_name")
     private String companyName;
 
-    // 对应 industry (VARCHAR(50))
+    @TableField("industry")
     private String industry;
 
-    // 对应 job_title (VARCHAR(100))
-    @Column(name = "job_title")
+    @TableField("job_title")
     private String jobTitle;
 
-    // 对应 employment_type (VARCHAR(50))
-    @Column(name = "employment_type")
+    @TableField("employment_type")
     private String employmentType;
 
-    // 对应 job_start_date (DATE)
-    @Column(name = "job_start_date", nullable = false)
+    @TableField("job_start_date")
     private LocalDate jobStartDate;
 
-    // 对应 job_end_date (DATE)
-    @Column(name = "job_end_date")
+    @TableField("job_end_date")
     private LocalDate jobEndDate;
 
-    // 对应 work_city (VARCHAR(50))
-    @Column(name = "work_city")
+    @TableField("work_city")
     private String workCity;
 
-    // 对应 job_description (TEXT)
-    @Column(name = "job_description", columnDefinition = "TEXT")
+    @TableField("job_description")
     private String jobDescription;
 
-    /* 关系映射：多对一（多条工作记录属于一个校友）*/
-    // 尽管目前我们假设一个校友一条记录，但使用 ManyToOne 提高了模型的灵活性
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alumni_id", nullable = false)
-    private AlumniInfo alumniInfo;
-
-    // 省略：构造函数、Getter/Setter（由 @Data 提供）
+    // 【MyBatis-Plus 模式】：移除关系对象 AlumniInfo alumniInfo;
 }

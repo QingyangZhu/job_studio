@@ -1,47 +1,41 @@
 package com.job.job_studio.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.time.LocalDate;
+// 移除所有 JPA 相关的导入
 
-@Entity
-@Table(name = "alumni_events")
 @Data
+@TableName("alumni_events") // 映射到 alumni_events 表
 public class AlumniEvent {
 
-    // 对应 event_instance_id (INT PRIMARY KEY)
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId("event_instance_id")
     private Long eventInstanceId;
 
-    // 对应 event_name (VARCHAR(100))
-    @Column(name = "event_name", nullable = false)
+    // 外键字段：关联 AlumniInfo
+    @TableField("alumni_id")
+    private Long alumniId;
+
+    // 外键字段：关联 EventType
+    @TableField("event_type_id")
+    private Long eventTypeId;
+
+    @TableField("event_name")
     private String eventName;
 
-    // 对应 event_start_date (DATE)
-    @Column(name = "event_start_date")
+    @TableField("event_start_date")
     private LocalDate eventStartDate;
 
-    // 对应 event_end_date (DATE)
-    @Column(name = "event_end_date")
+    @TableField("event_end_date")
     private LocalDate eventEndDate;
 
-    // 对应 outcome (VARCHAR(100)) - 成果/结果
+    @TableField("outcome")
     private String outcome;
 
-    // 对应 event_level (VARCHAR(50)) - 级别，例如“国家级” [3]
-    @Column(name = "event_level")
+    @TableField("event_level")
     private String eventLevel;
 
-    /* 关系映射：多对一（多个事件属于一个校友）*/
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alumni_id", nullable = false)
-    private AlumniInfo alumniInfo;
-
-    /* 关系映射：多对一（多个事件属于一个事件类型）*/
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_type_id", nullable = false)
-    private EventType eventType;
-
-    // 省略：构造函数、Getter/Setter（由 @Data 提供）
+    // 【MyBatis-Plus 模式】：移除关系对象 AlumniInfo alumniInfo 和 EventType eventType;
 }

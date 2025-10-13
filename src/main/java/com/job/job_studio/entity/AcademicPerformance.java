@@ -1,41 +1,34 @@
 package com.job.job_studio.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.math.BigDecimal;
+// 移除所有 JPA 相关的导入
 
-@Entity
-@Table(name = "academic_performance")
 @Data
+@TableName("academic_performance") // 映射到 academic_performance 表
 public class AcademicPerformance {
 
-    // 对应 gpa_id (INT PRIMARY KEY)
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId("gpa_id")
     private Long gpaId;
 
-    // 对应 academic_year (VARCHAR(20))
-    @Column(name = "academic_year", nullable = false)
+    // 外键字段：关联 AlumniInfo，必须显式保留以支持查询
+    @TableField("alumni_id")
+    private Long alumniId;
+
+    @TableField("academic_year")
     private String academicYear;
 
-    // 对应 semester (VARCHAR(20))
-    @Column(name = "semester", nullable = false)
+    @TableField("semester")
     private String semester;
 
-    // 对应 overall_gpa (DECIMAL(4,2))
-    @Column(name = "overall_gpa", precision = 4, scale = 2)
+    @TableField("overall_gpa")
     private BigDecimal overallGpa;
 
-    // 对应 major_gpa (DECIMAL(4,2))
-    // 主修科目GPA，是我们分析生涯曲线的关键指标 [2]
-    @Column(name = "major_gpa", precision = 4, scale = 2)
+    @TableField("major_gpa")
     private BigDecimal majorGpa;
 
-    /* 关系映射：多对一（多条 GPA 记录属于一个校友）*/
-    @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn 指定了外键列名，即 academic_performance 表中的 alumni_id
-    @JoinColumn(name = "alumni_id", nullable = false)
-    private AlumniInfo alumniInfo;
-
-    // 省略：构造函数、Getter/Setter（由 @Data 提供）
+    // 【MyBatis-Plus 模式】：移除关系对象 AlumniInfo alumniInfo;
 }

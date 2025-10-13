@@ -1,30 +1,23 @@
 package com.job.job_studio.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import java.util.List;
+// 移除所有 JPA 相关的导入
 
-@Entity
-@Table(name = "event_types")
 @Data
+@TableName("event_types") // 映射到 event_types 表
 public class EventType {
 
-    // 对应 event_type_id (INT PRIMARY KEY)
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId("event_type_id")
     private Long eventTypeId;
 
-    // 对应 event_type_name (VARCHAR(50) UNIQUE)
-    @Column(name = "event_type_name", unique = true, nullable = false)
+    @TableField("event_type_name")
     private String eventTypeName;
 
-    // 对应 description (TEXT)
-    @Column(columnDefinition = "TEXT")
+    @TableField("description")
     private String description;
 
-    /* 关系映射：一个事件类型下有多个事件实例 */
-    @OneToMany(mappedBy = "eventType")
-    private List<AlumniEvent> alumniEvents;
-
-    // 省略：构造函数、Getter/Setter（由 @Data 提供）
+    // 【MyBatis-Plus 模式】：移除关系列表 List<AlumniEvent> alumniEvents;
 }

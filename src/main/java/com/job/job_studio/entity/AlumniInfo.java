@@ -1,55 +1,38 @@
 package com.job.job_studio.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import java.util.List;
+// 移除所有 JPA 相关的导入
 
-@Entity
-@Table(name = "alumni_info")
 @Data
+@TableName("alumni_info") // 映射到 alumni_info 表
 public class AlumniInfo {
 
-    // 对应 alumni_id (INT PRIMARY KEY)
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // 主键，MyBatis-Plus 默认采用雪花算法或数据库自增
+    @TableId("alumni_id")
     private Long alumniId;
 
-    // 对应 student_id (VARCHAR(20) UNIQUE)
-    @Column(name = "student_id", unique = true, nullable = false)
+    // 字段名和列名不同，需要显式映射
+    @TableField("student_id")
     private String studentId;
 
-    // 对应 name (VARCHAR(50))
-    @Column(name = "name", nullable = false)
+    @TableField("name")
     private String name;
 
-    // 对应 gender (VARCHAR(10))
+    @TableField("gender")
     private String gender;
 
-    // 对应 major (VARCHAR(50))
+    @TableField("major")
     private String major;
 
-    // 对应 graduation_year (INT)
-    @Column(name = "graduation_year")
+    @TableField("graduation_year")
     private Integer graduationYear;
 
-    // 对应 contact_email (VARCHAR(100) UNIQUE)
-    @Column(name = "contact_email", unique = true)
+    @TableField("contact_email")
     private String contactEmail;
 
-    /* 关系映射：一个校友有多条 GPA 记录 */
-    // mappedBy 指向 AcademicPerformance 实体中关联该 AlumniInfo 的字段名
-    // CascadeType.ALL 确保对 AlumniInfo 的操作（如删除）会级联到其关联的 GPA 记录
-    @OneToMany(mappedBy = "alumniInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AcademicPerformance> gpaRecords;
-
-    /* 关系映射：一个校友有多个特殊事件 */
-    @OneToMany(mappedBy = "alumniInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlumniEvent> alumniEvents;
-
-    /* 关系映射：一个校友有一条工作详情记录 */
-    // 假设 career_details 中 alumni_id 是唯一的，因此是一对一关系，此处使用 OneToMany 以便未来扩展
-    @OneToMany(mappedBy = "alumniInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CareerDetails> careerDetails;
-
-    // 省略：构造函数、Getter/Setter（由 @Data 提供）
+    // 【MyBatis-Plus 模式】：不再直接定义关系列表（如 List<AcademicPerformance>），
+    // 关系数据在 Service 层通过 ID (alumniId) 查询获得。
 }
