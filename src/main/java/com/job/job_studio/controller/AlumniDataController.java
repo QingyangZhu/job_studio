@@ -6,6 +6,8 @@ import com.job.job_studio.entity.AlumniEvent;
 import com.job.job_studio.service.AlumniInfoService;
 import com.job.job_studio.service.AcademicPerformanceService;
 import com.job.job_studio.service.AlumniEventService;
+import com.job.job_studio.service.AlumniTimelineService; // 引入新的 Service
+import com.job.job_studio.vo.AlumniTimelineVO; // 引入新的 VO
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,24 +17,27 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/alumni") // 定义基础路径
+@RequestMapping("/alumni") //
 public class AlumniDataController {
 
     private final AlumniInfoService alumniInfoService;
     private final AcademicPerformanceService academicPerformanceService;
     private final AlumniEventService alumniEventService;
+    private final AlumniTimelineService alumniTimelineService; // 新增注入
 
     @Autowired
     public AlumniDataController(AlumniInfoService alumniInfoService,
                                 AcademicPerformanceService academicPerformanceService,
-                                AlumniEventService alumniEventService) {
+                                AlumniEventService alumniEventService,
+                                AlumniTimelineService alumniTimelineService) { // 更新构造器
         this.alumniInfoService = alumniInfoService;
         this.academicPerformanceService = academicPerformanceService;
         this.alumniEventService = alumniEventService;
+        this.alumniTimelineService = alumniTimelineService; // 赋值
     }
 
     /**
-     * GET /api/alumni/all
+     * GET /api/v1/alumni/all
      * 获取所有校友的基本信息列表，用于大屏总览或下拉选择框。
      * @return 包含所有校友基本信息的列表
      */
@@ -43,7 +48,7 @@ public class AlumniDataController {
     }
 
     /**
-     * GET /api/alumni/{alumniId}
+     * GET /api/v1/alumni/{alumniId}
      * 根据校友ID获取该校友的完整生涯轨迹数据（基本信息 + GPA + 事件）。
      * @param alumniId 校友ID
      * @return 包含该校友所有数据的聚合对象
@@ -69,5 +74,21 @@ public class AlumniDataController {
         responseData.put("events", eventList);
 
         return ResponseEntity.ok(responseData);
+    }
+
+    /**
+     * GET /api/v1/alumni/{alumniId}/timeline
+     * 接口功能：获取校友的多维度成长曲线数据（GPA线、持续区域、里程碑标记）。
+     * @param alumniId 校友ID
+     * @return D3.js 可视化所需的 AlumniTimelineVO JSON 结构。
+     */
+    @GetMapping("/{alumniId}/timeline")
+    public ResponseEntity<AlumniTimelineVO> getAlumniTimeline(@PathVariable Long alumniId) {
+        AlumniTimelineVO timelineData = alumniTimelineService.getAlumniTimelineData(alumniId);
+
+        if (timelineData == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(timelineData);
     }
 }
