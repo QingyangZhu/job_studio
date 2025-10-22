@@ -4,11 +4,13 @@ import com.job.job_studio.entity.CareerDetails;
 import com.job.job_studio.entity.AlumniEvent;
 import com.job.job_studio.service.CareerDetailsService;
 import com.job.job_studio.service.AlumniEventService;
+import com.job.job_studio.service.JobDistributionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/jobs") // 定义基础路径
@@ -16,12 +18,15 @@ public class JobAnalysisController {
 
     private final CareerDetailsService careerDetailsService;
     private final AlumniEventService alumniEventService;
+    private final JobDistributionService jobDistributionService; // 新增字段
 
     @Autowired
     public JobAnalysisController(CareerDetailsService careerDetailsService,
-                                 AlumniEventService alumniEventService) {
+                                 AlumniEventService alumniEventService,
+                                 JobDistributionService jobDistributionService) {
         this.careerDetailsService = careerDetailsService;
         this.alumniEventService = alumniEventService;
+        this.jobDistributionService = jobDistributionService;
     }
 
     /**
@@ -57,5 +62,16 @@ public class JobAnalysisController {
         // 查询 “国家级” 事件，用于前端展示成就墙
         List<AlumniEvent> events = alumniEventService.getEventsByLevel("国家级");
         return ResponseEntity.ok(events);
+    }
+
+    /**
+     * GET /api/v1/jobs/distribution
+     * 接口功能：获取按地理位置聚合的就业人数和行业分布数据（包含高德坐标）。
+     * @return 包含 provinceData 和 cityDetailsMap 的聚合 Map。
+     */
+    @GetMapping("/distribution")
+    public ResponseEntity<Map<String, Object>> getJobDistributionData() {
+        Map<String, Object> distributionData = jobDistributionService.getAggregatedJobDistribution();
+        return ResponseEntity.ok(distributionData);
     }
 }
