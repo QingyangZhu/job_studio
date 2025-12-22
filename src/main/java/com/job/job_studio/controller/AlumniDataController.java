@@ -91,4 +91,33 @@ public class AlumniDataController {
         }
         return ResponseEntity.ok(timelineData);
     }
+
+    // --- 新增管理接口 ---
+
+    /**
+     * 新增校友
+     */
+    @PostMapping
+    public ResponseEntity<String> addAlumni(@RequestBody AlumniInfo alumni) {
+        boolean success = alumniInfoService.save(alumni);
+        return success ? ResponseEntity.ok("新增成功") : ResponseEntity.badRequest().body("新增失败");
+    }
+
+    /**
+     * 更新校友
+     */
+    @PutMapping
+    public ResponseEntity<String> updateAlumni(@RequestBody AlumniInfo alumni) {
+        boolean success = alumniInfoService.updateById(alumni);
+        return success ? ResponseEntity.ok("更新成功") : ResponseEntity.badRequest().body("更新失败");
+    }
+
+    /**
+     * 删除校友
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAlumni(@PathVariable Long id) {
+        boolean success = alumniInfoService.removeById(id);
+        return success ? ResponseEntity.ok("删除成功") : ResponseEntity.badRequest().body("删除失败");
+    }
 }

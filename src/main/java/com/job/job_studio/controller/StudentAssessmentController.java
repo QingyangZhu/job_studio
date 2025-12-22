@@ -1,5 +1,6 @@
 package com.job.job_studio.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.job.job_studio.entity.StudentInfo;
 import com.job.job_studio.entity.AssessmentResult;
 import com.job.job_studio.entity.StudentExperience;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,5 +96,91 @@ public class StudentAssessmentController {
         profile.put("experiences", experiences); // 实践经历列表
 
         return ResponseEntity.ok(profile);
+    }
+
+    // --- 新增管理接口 ---
+
+    /**
+     * 新增学生信息
+     */
+    @PostMapping
+    public ResponseEntity<String> addStudent(@RequestBody StudentInfo student) {
+        boolean success = studentInfoService.save(student);
+        return success ? ResponseEntity.ok("新增成功") : ResponseEntity.badRequest().body("新增失败");
+    }
+
+    /**
+     * 更新学生信息
+     */
+    @PutMapping
+    public ResponseEntity<String> updateStudent(@RequestBody StudentInfo student) {
+        boolean success = studentInfoService.updateById(student);
+        return success ? ResponseEntity.ok("更新成功") : ResponseEntity.badRequest().body("更新失败");
+    }
+
+    /**
+     * 删除学生信息
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteStudent(@PathVariable Long id) {
+        boolean success = studentInfoService.removeById(id);
+        return success ? ResponseEntity.ok("删除成功") : ResponseEntity.badRequest().body("删除失败");
+    }
+
+    /**
+     * [Admin] 获取指定学生的测评详情，用于后台回显
+     * @param studentId 学生ID
+     * @return 测评对象，如果不存在则返回默认空结构
+     */
+    @GetMapping("/{studentId}/assessment/detail")
+    public ResponseEntity<AssessmentResult> getAssessmentDetail(@PathVariable Long studentId) {
+        // 使用 Service 或 Mapper 直接查询
+        // 这里假设 assessmentResultService.getOne 配合 wrapper 使用
+        QueryWrapper<AssessmentResult> query = new QueryWrapper<>();
+        query.eq("student_id", studentId)
+                .orderByDesc("assessment_date") // 取最近的一次
+                .last("LIMIT 1");
+
+        AssessmentResult result = assessmentResultService.getOne(query);
+
+        // 如果没有数据，返回一个带有 studentId 的空对象，方便前端处理新增逻辑
+        if (result == null) {
+            result = new AssessmentResult();
+            result.setStudentId(studentId);
+            result.setIsComplete(false); // 标记为未完成
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * [Admin] 管理员保存/更新学生的测评数据（补充测评）
+     * @param studentId 路径参数确保 ID 一致性
+     * @param result 前端提交的测评数据
+     */
+    @PostMapping("/{studentId}/assessment/save")
+    public ResponseEntity<String> saveAssessment(
+            @PathVariable Long studentId,
+            @RequestBody AssessmentResult result) {
+
+        // 1. 强制绑定 StudentID，防止数据错乱
+        result.setStudentId(studentId);
+
+        // 2. 设置必要的默认值
+        if (result.getAssessmentDate() == null) {
+            result.setAssessmentDate(LocalDate.now());
+        }
+        result.setIsComplete(true); // 管理员录入的视为有效完整数据
+
+        // 3. 判断是新增还是更新
+        // 如果 assessmentId 为空，则是新增；否则是更新
+        // MyBatis-Plus 的 saveOrUpdate 会根据主键自动判断，但为了保险，我们可以先查一下
+        boolean success = assessmentResultService.saveOrUpdate(result);
+
+        if (success) {
+            return ResponseEntity.ok("测评数据保存成功");
+        } else {
+            return ResponseEntity.badRequest().body("保存失败");
+        }
     }
 }
