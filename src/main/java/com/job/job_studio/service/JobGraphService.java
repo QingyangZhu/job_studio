@@ -1,5 +1,6 @@
 package com.job.job_studio.service;
 
+import java.util.List;
 import java.util.Map;
 
 public interface JobGraphService {
@@ -12,4 +13,5 @@ public interface JobGraphService {
      * @return 符合 ECharts Graph 格式的 JSON 数据 (Map)
      */
     Map<String, Object> generateForceGraphData(String jobRoleName, Long studentId);
+    List<String> getAllJobRoles();
 }
