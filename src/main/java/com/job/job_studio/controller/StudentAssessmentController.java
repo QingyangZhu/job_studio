@@ -183,4 +183,27 @@ public class StudentAssessmentController {
             return ResponseEntity.badRequest().body("保存失败");
         }
     }
+    /**
+     * 学生端提交测评（自动标记为已完成）
+     */
+    @PostMapping("/{studentId}/assessment/submit")
+    public ResponseEntity<String> submitAssessment(
+            @PathVariable Long studentId,
+            @RequestBody AssessmentResult result) {
+
+        // 1. 绑定 ID 和 时间
+        result.setStudentId(studentId);
+        result.setAssessmentDate(LocalDate.now());
+        result.setIsComplete(true); // 标记完成
+
+        // 2. 保存到数据库 (SaveOrUpdate)
+        boolean success = assessmentResultService.saveOrUpdate(result);
+
+        if (success) {
+            return ResponseEntity.ok("测评提交成功");
+        } else {
+            return ResponseEntity.status(500).body("提交失败");
+        }
+    }
+
 }
