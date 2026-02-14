@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("student_info") // 映射到 student_info 表
+@TableName("student_info")
 public class StudentInfo {
 
     // 主键：学号 (对应 student_id)
@@ -27,4 +27,18 @@ public class StudentInfo {
 
     @TableField("contact_email")
     private String contactEmail;
+
+    // === 新增字段 ===
+
+    @TableField("phone")
+    private String phone;
+
+    @TableField("target_job")
+    private String targetJob;
+
+    @TableField("github_link")
+    private String githubLink;
+
+    @TableField("bio")
+    private String bio;
 }
