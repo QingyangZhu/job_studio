@@ -67,6 +67,9 @@ public class SecurityConfig {
                         // 确保你的 Controller 是 @RequestMapping("/api/auth")
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        // 允许学生和管理员提交测评
+                        .requestMatchers("/api/students/**").hasAnyRole("STUDENT", "ADMIN")
+
                         // 放行 Swagger 文档
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
