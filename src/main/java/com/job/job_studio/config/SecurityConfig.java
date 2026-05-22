@@ -64,11 +64,10 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
                         // === 关键：放行登录接口 ===
-                        // 确保你的 Controller 是 @RequestMapping("/api/auth")
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
 
                         // 允许学生和管理员提交测评
-                        .requestMatchers("/api/students/**").hasAnyRole("STUDENT", "ADMIN")
+                        .requestMatchers("/students/**").hasAnyRole("STUDENT", "ADMIN")
 
                         // 放行 Swagger 文档
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -77,7 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/images/**", "/css/**", "/js/**").permitAll()
 
                         // 管理员接口权限
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         // 其他接口需认证
                         .anyRequest().authenticated()

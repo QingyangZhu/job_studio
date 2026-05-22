@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// 【修改点1】为了解决 403 问题并符合前后端分离规范，建议加上 /api 前缀
-// 请确保 SecurityConfig 中放行了 "/api/students/**"
+// 路径前缀 /api 由 server.servlet.context-path 统一管理，Controller 无需添加
 @RestController
 @RequestMapping("/students")
 public class StudentAssessmentController {
